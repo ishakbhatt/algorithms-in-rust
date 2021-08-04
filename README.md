@@ -1,1 +1,1 @@
-# algorithms-in-rust
+# Sorting Algorithm Implementations in Rust
