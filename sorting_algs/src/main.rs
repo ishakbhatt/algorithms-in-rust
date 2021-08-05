@@ -187,6 +187,67 @@ fn quick_sort(arr: &mut[i32], start:i32, end:i32){
     }
 }
 
+// Radix Sort
+/*
+* Digit by digit sort starting from LSD to MSD.
+* Radix sort uses counting sort as a subroutine to sort.
+* Lowest bound for comparison-based sorting is nlog(n).
+* Counting sort is linear when elements are in range 1 to k.
+* However, counting sort's worst case runtime is O(n^2).
+* With Radix Sort you can sort 1 to k^2 in linear time.
+*
+*/
+
+fn radixSort(arr: &mut[i32], n:i32){
+	// Find max number to know max # of digits
+	let mut max = arr[0];
+	for i in 1..n {
+		if arr[i] > m {
+			max = arr[i];
+		}
+	}
+
+	// Do counting sort for every digit. Start with LSD (1) 
+	// and go to MSD (10^i based on max)
+	let mut exp = 1;
+	while exp / max > 0 {
+		countSort(arr, n, exp);
+		exp *= 10; // go up sig digits
+	}
+
+}
+// Radix Sort Helper Fn: Counting Sort
+fn countSort(arr: &mut[i32], n:i32, exp:i32){
+	let output: [i32, n] = [0, n-1];
+	let count: [i32, 10] = [0, 0];
+
+	// Store number of occurrences of digits (0-9) in count bucket
+	for i in 0..n {
+		count[(arr[i] / exp) % 10]++;
+	}
+
+	// Change count[i] so that count[i] contains actual 
+	// position of digit in output[i]
+	for i in 1..10 {
+		count[i] += count[i - 1];
+	}
+
+	// Build output array
+	let mut i = n-1;
+	while i >= 0 {
+		output[count[(arr[i] / exp) % 10] - 1] = arr[i];
+		count[(arr[i] / exp) % 10]--;
+		i--;
+	}
+
+	// Copy output array to arr[]
+	for i in 0..n {
+		arr[i] = output[i];
+	}
+
+}
+
+/////////////////////////////////////////////////////////
 fn print_array(arr: &[i32]){
     for i in 0..arr.len() {
         print!(" {} ", arr[i]);
