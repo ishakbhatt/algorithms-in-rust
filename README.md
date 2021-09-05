@@ -5,6 +5,7 @@
 - Merge Sort
 - Quick Sort
 ## How to run:
+- Navigate to sorting_algs
 ```bash
 cargo run
 ```
