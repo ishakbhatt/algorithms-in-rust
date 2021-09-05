@@ -1,4 +1,4 @@
-# Sorting Algorithm Implementations in Rust
+# Sorting Algorithms in Rust
 - Selection Sort
 - Bubble Sort
 - Insertion Sort
