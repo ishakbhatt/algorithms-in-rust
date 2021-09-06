@@ -1,3 +1,4 @@
+use std::convert::TryFrom;
 // Selection Sort
 
 /*
@@ -98,43 +99,42 @@ fn insertion_sort(arr: &mut[i32]){
 
 fn merge(arr: &mut[i32], start:i32, mid:i32, end:i32){
     // Create copies of subarrays: L <-- arr[start..mid], H <-- arr[mid+1]
-    let L: [i32, mid-start+1] = [0; mid-start+1];
-    let H: [i32, end-mid] = [0; end-mid];
+    let mut L = vec![0; usize::try_from(mid-start+1).unwrap()];
+    let mut H = vec![0; usize::try_from(end-mid).unwrap()];
 
     for i in 0..mid+start-1 {
-        L[i] = arr[i];
+        L[usize::try_from(i).unwrap()] = arr[usize::try_from(i).unwrap()];
     } for j in 0..end-mid {
-        H[j] = arr[mid + 1 + j];
+        H[usize::try_from(j).unwrap()] = arr[usize::try_from(mid + 1 + j).unwrap()];
     } 
 
     // Create pointers that maintain current indices of three arrays
-    let mut curr_L = 0;
-    let mut curr_H = 0;
-    let mut curr_arr = start;
+    let mut curr_L:usize = 0;
+    let mut curr_H:usize = 0;
+    let mut curr_arr:usize = usize::try_from(start).unwrap();
 
     // Pick larger among elements and place in correct position until reaching end of either
-    while curr_L < (mid-start + 1) && curr_H < (end-mid){
+    while curr_L < usize::try_from(mid-start + 1).unwrap() && curr_H < usize::try_from(end-mid).unwrap(){
         if L[curr_L] <= H[curr_H] {
             arr[curr_arr] = L[curr_L];
-            curr_L++;
+            curr_L+=1;
         } else {
             arr[curr_arr] = H[curr_H];
-            curr_H++;
+            curr_H+=1;
         }
-        ++curr_arr;
+        curr_arr+=1;
     }
 
     // When you run out of either, append other subarray at the end of arr
-    while curr_L < (mid-start+1) {
+    while curr_L < usize::try_from(mid-start+1).unwrap() {
             arr[curr_arr] = L[curr_L];
-            curr_arr++;
-            curr_L;
+            curr_arr+=1;
+            curr_L+=1;
     }
-    while curr_H < (end-mid) {
+    while curr_H < usize::try_from(end-mid).unwrap() {
             arr[curr_arr] = H[curr_H];
-            curr_arr++;
-            curr_H++;
-        }
+            curr_arr+=1;
+            curr_H+=1;
     }
 
 }
@@ -158,20 +158,21 @@ fn merge_sort(arr: &mut[i32], start:i32, end:i32){
  *
  *
  * */
-fn partition(arr: &mut[i32], start:i32, end:i32){
+fn partition(arr: &mut[i32], start:i32, end:i32) -> i32{
     // select pivot
-    let pivot:i32 = arr[end];
+    let pivot:i32 = arr[usize::try_from(end).unwrap()];
 
     // index of smaller element and indicates right position of pivot found so far
-    int i = (start - 1);
+    let mut i = usize::try_from(start - 1).unwrap();
 
     for j in start..end-1 {
-        if arr[j] < pivot {
-            i++; // increment index of smaller element
-            arr.swap(i, j)
+        if arr[usize::try_from(j).unwrap()] < pivot {
+            i+=1; // increment index of smaller element
+            arr.swap(usize::try_from(i).unwrap(), usize::try_from(j).unwrap());
         }
     }
-    arr.swap(i+1, end);
+    arr.swap(usize::try_from(i+1).unwrap(), usize::try_from(end).unwrap());
+    i32::try_from(i).unwrap()
 }
 
 
@@ -182,8 +183,8 @@ fn quick_sort(arr: &mut[i32], start:i32, end:i32){
         let part = partition(arr, start, end);
 
         // QuickSort before partition and after partition
-        quickSort(arr, start, part-1);
-        quickSort(arr, part+1, end);
+        quick_sort(arr, start, part-1);
+        quick_sort(arr, part+1, end);
     }
 }
 
@@ -202,8 +203,8 @@ fn radixSort(arr: &mut[i32], n:i32){
 	// Find max number to know max # of digits
 	let mut max = arr[0];
 	for i in 1..n {
-		if arr[i] > m {
-			max = arr[i];
+		if arr[usize::try_from(i).unwrap()] > n {
+			max = arr[usize::try_from(i).unwrap()];
 		}
 	}
 
@@ -218,31 +219,31 @@ fn radixSort(arr: &mut[i32], n:i32){
 }
 // Radix Sort Helper Fn: Counting Sort
 fn countSort(arr: &mut[i32], n:i32, exp:i32){
-	let output: [i32, n] = [0, n-1];
-	let count: [i32, 10] = [0, 0];
+	let mut output = vec![0; usize::try_from(n-1).unwrap()];
+	let mut count = vec![0; 9];
 
 	// Store number of occurrences of digits (0-9) in count bucket
 	for i in 0..n {
-		count[(arr[i] / exp) % 10]++;
+		count[usize::try_from((arr[usize::try_from(i).unwrap()] / exp) % 10).unwrap()]+=1;
 	}
 
 	// Change count[i] so that count[i] contains actual 
 	// position of digit in output[i]
 	for i in 1..10 {
-		count[i] += count[i - 1];
+		count[usize::try_from(i).unwrap()] += count[usize::try_from(i - 1).unwrap()];
 	}
 
 	// Build output array
-	let mut i = n-1;
+	let mut i: usize = usize::try_from(n-1).unwrap();
 	while i >= 0 {
-		output[count[(arr[i] / exp) % 10] - 1] = arr[i];
-		count[(arr[i] / exp) % 10]--;
-		i--;
+		output[count[usize::try_from((arr[i] / exp) % 10).unwrap()] - 1] = arr[i];
+		count[usize::try_from((arr[i] / exp) % 10).unwrap()]-=1;
+		i-=1;
 	}
 
 	// Copy output array to arr[]
 	for i in 0..n {
-		arr[i] = output[i];
+		arr[usize::try_from(i).unwrap()] = output[usize::try_from(i).unwrap()];
 	}
 
 }
@@ -250,7 +251,7 @@ fn countSort(arr: &mut[i32], n:i32, exp:i32){
 /////////////////////////////////////////////////////////
 fn print_array(arr: &[i32]){
     for i in 0..arr.len() {
-        print!(" {} ", arr[i]);
+        print!(" {} ", arr[usize::try_from(i).unwrap()]);
     }
     println!("");
 }
